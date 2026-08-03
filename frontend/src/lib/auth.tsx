@@ -9,66 +9,48 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { login as apiLogin, type User, api } from "@/lib/api";
+import { DEMO_ACCOUNTS, type DemoUser } from "@/data/mock";
 
 type AuthState = {
-  user: User | null;
-  token: string | null;
+  user: DemoUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthState | null>(null);
+const KEY = "mia_campus_user";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<DemoUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const t = localStorage.getItem("mia_token");
-    const u = localStorage.getItem("mia_user");
-    if (t && u) {
-      setToken(t);
-      setUser(JSON.parse(u));
-      api("/auth/me")
-        .then((me) => {
-          setUser(me as User);
-          localStorage.setItem("mia_user", JSON.stringify(me));
-        })
-        .catch(() => {
-          localStorage.removeItem("mia_token");
-          localStorage.removeItem("mia_user");
-          setToken(null);
-          setUser(null);
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) setUser(JSON.parse(raw));
+    } catch {
+      localStorage.removeItem(KEY);
     }
+    setLoading(false);
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const res = await apiLogin(email, password);
-    localStorage.setItem("mia_token", res.access_token);
-    localStorage.setItem("mia_user", JSON.stringify(res.user));
-    setToken(res.access_token);
-    setUser(res.user);
+    await new Promise((r) => setTimeout(r, 280));
+    const found = DEMO_ACCOUNTS.find(
+      (a) => a.email.toLowerCase() === email.toLowerCase() && a.password === password
+    );
+    if (!found) throw new Error("Invalid email or password");
+    localStorage.setItem(KEY, JSON.stringify(found));
+    setUser(found);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem("mia_token");
-    localStorage.removeItem("mia_user");
-    setToken(null);
+    localStorage.removeItem(KEY);
     setUser(null);
   }, []);
 
-  const value = useMemo(
-    () => ({ user, token, loading, login, logout }),
-    [user, token, loading, login, logout]
-  );
-
+  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

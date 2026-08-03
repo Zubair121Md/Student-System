@@ -1,19 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
-import { DataTable, PageHeader } from "@/components/ui";
-import { api } from "@/lib/api";
+import { DataTable } from "@/components/ui";
+import { transport } from "@/data/mock";
 
 export default function TransportPage() {
-  const { data } = useQuery({
-    queryKey: ["transport"],
-    queryFn: () => api<Record<string, unknown>[]>("/transport/routes"),
-  });
-
   return (
-    <AppShell>
-      <PageHeader title="Transport" subtitle="Routes, vehicles, drivers, and stop lists" />
+    <AppShell title="Transport" subtitle="Routes, vehicles, and drivers">
       <DataTable
         columns={[
           { key: "code", label: "Code" },
@@ -24,14 +17,14 @@ export default function TransportPage() {
           { key: "capacity", label: "Capacity" },
           { key: "stops", label: "Stops" },
         ]}
-        rows={(data || []).map((r) => ({
-          code: String(r.route_code),
-          name: String(r.name),
-          vehicle: String(r.vehicle_no),
-          driver: String(r.driver_name),
-          phone: String(r.driver_phone),
+        rows={transport.map((r) => ({
+          code: r.code,
+          name: r.name,
+          vehicle: r.vehicle,
+          driver: r.driver,
+          phone: r.phone,
           capacity: String(r.capacity),
-          stops: Array.isArray(r.stops) ? r.stops.slice(0, 3).join(", ") + "…" : "—",
+          stops: String(r.stops),
         }))}
       />
     </AppShell>

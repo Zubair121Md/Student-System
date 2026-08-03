@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "MIA Campus | MIA Solutions Pvt. Ltd.",
-  description: "Student Information System by MIA Solutions Pvt. Ltd. — test site with sample data.",
+  description: "Student information system portfolio demo by MIA Solutions Pvt. Ltd.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

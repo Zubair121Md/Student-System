@@ -1,24 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
-import { DataTable, PageHeader, StatusPill } from "@/components/ui";
-import { api } from "@/lib/api";
+import { DataTable, StatusPill } from "@/components/ui";
+import { libraryBooks, libraryIssues } from "@/data/mock";
 
 export default function LibraryPage() {
-  const books = useQuery({
-    queryKey: ["books"],
-    queryFn: () => api<Record<string, unknown>[]>("/library/books"),
-  });
-  const issues = useQuery({
-    queryKey: ["issues"],
-    queryFn: () => api<Record<string, unknown>[]>("/library/issues"),
-  });
-
   return (
-    <AppShell>
-      <PageHeader title="Library" subtitle="Catalog, issue/return, RFID tags, fines" />
-      <h2 className="font-medium mb-2">Catalog</h2>
+    <AppShell title="Library" subtitle="Catalog, issues, and RFID tags">
+      <h2 className="mb-3 text-sm font-semibold">Catalog</h2>
       <DataTable
         columns={[
           { key: "title", label: "Title" },
@@ -27,15 +16,15 @@ export default function LibraryPage() {
           { key: "available", label: "Available" },
           { key: "rfid", label: "RFID" },
         ]}
-        rows={(books.data || []).map((b) => ({
-          title: String(b.title),
-          author: String(b.author),
-          category: String(b.category),
-          available: `${b.available}/${b.copies}`,
-          rfid: String(b.rfid_tag || "—"),
+        rows={libraryBooks.map((b) => ({
+          title: b.title,
+          author: b.author,
+          category: b.category,
+          available: b.available,
+          rfid: b.rfid,
         }))}
       />
-      <h2 className="font-medium mt-8 mb-2">Issues</h2>
+      <h2 className="mb-3 mt-8 text-sm font-semibold">Issues</h2>
       <DataTable
         columns={[
           { key: "book", label: "Book" },
@@ -45,13 +34,13 @@ export default function LibraryPage() {
           { key: "fine", label: "Fine" },
           { key: "status", label: "Status" },
         ]}
-        rows={(issues.data || []).map((i) => ({
-          book: String(i.book),
-          student: String(i.student),
-          issued: String(i.issued_at),
-          due: String(i.due_date),
+        rows={libraryIssues.map((i) => ({
+          book: i.book,
+          student: i.student,
+          issued: i.issued,
+          due: i.due,
           fine: `₹${i.fine}`,
-          status: <StatusPill status={String(i.status)} />,
+          status: <StatusPill status={i.status} />,
         }))}
       />
     </AppShell>

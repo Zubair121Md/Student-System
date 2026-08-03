@@ -1,37 +1,30 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
-import { DataTable, PageHeader, StatusPill } from "@/components/ui";
-import { api } from "@/lib/api";
+import { DataTable, StatusPill } from "@/components/ui";
+import { campuses } from "@/data/mock";
 
 export default function CampusesPage() {
-  const { data } = useQuery({
-    queryKey: ["campuses"],
-    queryFn: () => api<Record<string, unknown>[]>("/campuses"),
-  });
-
   return (
-    <AppShell>
-      <PageHeader title="Campuses" subtitle="Multi-campus directory · MIA Solutions Pvt. Ltd." />
+    <AppShell title="Campuses" subtitle="Multi-campus directory · MIA Solutions Pvt. Ltd.">
       <DataTable
         columns={[
           { key: "code", label: "Code" },
           { key: "name", label: "Name" },
-          { key: "city", label: "City" },
+          { key: "city", label: "Location" },
           { key: "curriculum", label: "Curriculum" },
+          { key: "students", label: "Students" },
           { key: "capacity", label: "Capacity" },
-          { key: "email", label: "Email" },
           { key: "status", label: "Status" },
         ]}
-        rows={(data || []).map((c) => ({
-          code: String(c.code),
-          name: String(c.name),
+        rows={campuses.map((c) => ({
+          code: <span className="font-medium">{c.code}</span>,
+          name: c.name,
           city: `${c.city}, ${c.state}`,
-          curriculum: String(c.curriculum),
-          capacity: String(c.capacity),
-          email: String(c.email),
-          status: <StatusPill status={c.is_active ? "active" : "inactive"} />,
+          curriculum: c.curriculum,
+          students: c.students.toLocaleString("en-IN"),
+          capacity: c.capacity.toLocaleString("en-IN"),
+          status: <StatusPill status={c.status} />,
         }))}
       />
     </AppShell>

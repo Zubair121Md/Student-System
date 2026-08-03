@@ -1,44 +1,33 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
-import { DataTable, PageHeader, StatusPill } from "@/components/ui";
-import { api } from "@/lib/api";
+import { DataTable, StatusPill } from "@/components/ui";
+import { employees, payroll } from "@/data/mock";
 import { formatCurrency } from "@/lib/utils";
 
 export default function HRPage() {
-  const employees = useQuery({
-    queryKey: ["employees"],
-    queryFn: () => api<Record<string, unknown>[]>("/hr/employees"),
-  });
-  const payroll = useQuery({
-    queryKey: ["payroll"],
-    queryFn: () => api<Record<string, unknown>[]>("/hr/payroll"),
-  });
-
   return (
-    <AppShell>
-      <PageHeader title="HR & payroll" subtitle="Employees, leave, payroll runs, and appraisals" />
-      <h2 className="font-medium mb-2">Employees</h2>
+    <AppShell title="HR & payroll" subtitle="Employees and monthly payroll runs">
+      <h2 className="mb-3 text-sm font-semibold">Employees</h2>
       <DataTable
         columns={[
           { key: "id", label: "ID" },
           { key: "name", label: "Name" },
           { key: "designation", label: "Designation" },
-          { key: "department", label: "Dept" },
+          { key: "dept", label: "Department" },
           { key: "email", label: "Email" },
           { key: "status", label: "Status" },
         ]}
-        rows={(employees.data || []).map((e) => ({
-          id: String(e.employee_id),
-          name: String(e.full_name),
-          designation: String(e.designation),
-          department: String(e.department),
-          email: String(e.email),
-          status: <StatusPill status={String(e.status)} />,
+        rows={employees.map((e) => ({
+          id: e.id,
+          name: e.name,
+          designation: e.designation,
+          dept: e.dept,
+          email: e.email,
+          status: <StatusPill status={e.status} />,
         }))}
       />
-      <h2 className="font-medium mt-8 mb-2">Payroll</h2>
+      <h2 className="mb-3 mt-8 text-sm font-semibold">Payroll</h2>
       <DataTable
         columns={[
           { key: "employee", label: "Employee" },
@@ -48,13 +37,13 @@ export default function HRPage() {
           { key: "net", label: "Net" },
           { key: "status", label: "Status" },
         ]}
-        rows={(payroll.data || []).map((p) => ({
-          employee: String(p.employee),
-          month: String(p.month),
-          gross: formatCurrency(Number(p.gross)),
-          deductions: formatCurrency(Number(p.deductions)),
-          net: formatCurrency(Number(p.net)),
-          status: <StatusPill status={String(p.status)} />,
+        rows={payroll.map((p) => ({
+          employee: p.employee,
+          month: p.month,
+          gross: formatCurrency(p.gross),
+          deductions: formatCurrency(p.deductions),
+          net: formatCurrency(p.net),
+          status: <StatusPill status={p.status} />,
         }))}
       />
     </AppShell>

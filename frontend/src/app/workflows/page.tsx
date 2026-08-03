@@ -1,28 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
-import { DataTable, PageHeader, StatusPill } from "@/components/ui";
-import { api } from "@/lib/api";
+import { DataTable, StatusPill } from "@/components/ui";
+import { workflows, circulars, complaints } from "@/data/mock";
 
 export default function WorkflowsPage() {
-  const workflows = useQuery({
-    queryKey: ["workflows"],
-    queryFn: () => api<Record<string, unknown>[]>("/workflows"),
-  });
-  const complaints = useQuery({
-    queryKey: ["complaints"],
-    queryFn: () => api<Record<string, unknown>[]>("/complaints"),
-  });
-  const circulars = useQuery({
-    queryKey: ["circulars"],
-    queryFn: () => api<Record<string, unknown>[]>("/circulars"),
-  });
-
   return (
-    <AppShell>
-      <PageHeader title="Workflows & communication" subtitle="Approvals, circulars, and complaints" />
-      <h2 className="font-medium mb-2">Approvals</h2>
+    <AppShell title="Workflows & communication" subtitle="Approvals, circulars, complaints">
+      <h2 className="mb-3 text-sm font-semibold">Approvals</h2>
       <DataTable
         columns={[
           { key: "module", label: "Module" },
@@ -30,27 +15,23 @@ export default function WorkflowsPage() {
           { key: "status", label: "Status" },
           { key: "comments", label: "Comments" },
         ]}
-        rows={(workflows.data || []).map((w) => ({
-          module: String(w.module),
-          step: String(w.step),
-          status: <StatusPill status={String(w.status)} />,
-          comments: String(w.comments || "—"),
+        rows={workflows.map((w) => ({
+          module: w.module,
+          step: w.step,
+          status: <StatusPill status={w.status} />,
+          comments: w.comments,
         }))}
       />
-      <h2 className="font-medium mt-8 mb-2">Circulars</h2>
+      <h2 className="mb-3 mt-8 text-sm font-semibold">Circulars</h2>
       <DataTable
         columns={[
           { key: "title", label: "Title" },
           { key: "audience", label: "Audience" },
-          { key: "published", label: "Published" },
+          { key: "date", label: "Date" },
         ]}
-        rows={(circulars.data || []).map((c) => ({
-          title: String(c.title),
-          audience: String(c.audience),
-          published: String(c.published_at).slice(0, 10),
-        }))}
+        rows={circulars.map((c) => ({ title: c.title, audience: c.audience, date: c.date }))}
       />
-      <h2 className="font-medium mt-8 mb-2">Complaints</h2>
+      <h2 className="mb-3 mt-8 text-sm font-semibold">Complaints</h2>
       <DataTable
         columns={[
           { key: "category", label: "Category" },
@@ -58,11 +39,11 @@ export default function WorkflowsPage() {
           { key: "priority", label: "Priority" },
           { key: "status", label: "Status" },
         ]}
-        rows={(complaints.data || []).map((c) => ({
-          category: String(c.category),
-          subject: String(c.subject),
-          priority: String(c.priority),
-          status: <StatusPill status={String(c.status)} />,
+        rows={complaints.map((c) => ({
+          category: c.category,
+          subject: c.subject,
+          priority: <span className="capitalize">{c.priority}</span>,
+          status: <StatusPill status={c.status} />,
         }))}
       />
     </AppShell>

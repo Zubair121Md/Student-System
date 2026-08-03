@@ -1,51 +1,37 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
-import { DataTable, PageHeader, StatusPill, StatCard } from "@/components/ui";
-import { api } from "@/lib/api";
+import { DataTable, StatusPill, Stat } from "@/components/ui";
+import { admissions, admissionByStatus } from "@/data/mock";
 
 export default function AdmissionsPage() {
-  const list = useQuery({
-    queryKey: ["admissions"],
-    queryFn: () => api<Record<string, unknown>[]>("/admissions"),
-  });
-  const analytics = useQuery({
-    queryKey: ["admissions-analytics"],
-    queryFn: () => api<{ by_status: Record<string, number> }>("/admissions/analytics"),
-  });
-
-  const byStatus = analytics.data?.by_status || {};
-
   return (
-    <AppShell>
-      <PageHeader
-        title="Admissions"
-        subtitle="Application → Verification → Assessment → Approval → Fee Payment → Enrollment"
-      />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-        {Object.entries(byStatus).map(([k, v]) => (
-          <StatCard key={k} label={k} value={v} />
+    <AppShell title="Admissions" subtitle="Application → verification → assessment → approval → enrollment">
+      <div className="mb-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {admissionByStatus.map((s) => (
+          <Stat key={s.name} label={s.name} value={s.value} />
         ))}
       </div>
       <DataTable
         columns={[
-          { key: "application_no", label: "Application" },
-          { key: "applicant_name", label: "Applicant" },
-          { key: "applying_grade", label: "Grade" },
-          { key: "parent_name", label: "Parent" },
-          { key: "entrance_score", label: "Entrance" },
-          { key: "merit_rank", label: "Merit" },
+          { key: "no", label: "Application" },
+          { key: "name", label: "Applicant" },
+          { key: "grade", label: "Grade" },
+          { key: "parent", label: "Parent" },
+          { key: "campus", label: "Campus" },
+          { key: "entrance", label: "Entrance" },
+          { key: "merit", label: "Merit" },
           { key: "status", label: "Status" },
         ]}
-        rows={(list.data || []).map((a) => ({
-          application_no: String(a.application_no),
-          applicant_name: String(a.applicant_name),
-          applying_grade: String(a.applying_grade),
-          parent_name: String(a.parent_name),
-          entrance_score: a.entrance_score != null ? String(a.entrance_score) : "—",
-          merit_rank: a.merit_rank != null ? String(a.merit_rank) : "—",
-          status: <StatusPill status={String(a.status)} />,
+        rows={admissions.map((a) => ({
+          no: <span className="font-medium text-[var(--brand)]">{a.no}</span>,
+          name: a.name,
+          grade: a.grade,
+          parent: a.parent,
+          campus: a.campus,
+          entrance: a.entrance ?? "—",
+          merit: a.merit ?? "—",
+          status: <StatusPill status={a.status} />,
         }))}
       />
     </AppShell>

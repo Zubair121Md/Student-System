@@ -1,33 +1,26 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
-import { DataTable, PageHeader } from "@/components/ui";
-import { api } from "@/lib/api";
+import { DataTable } from "@/components/ui";
+import { homework } from "@/data/mock";
 
 export default function HomeworkPage() {
-  const { data } = useQuery({
-    queryKey: ["homework"],
-    queryFn: () => api<Record<string, unknown>[]>("/homework"),
-  });
-
   return (
-    <AppShell>
-      <PageHeader title="Homework" subtitle="Teacher assignments visible on parent and student portals" />
+    <AppShell title="Homework" subtitle="Assignments for parent and student views">
       <DataTable
         columns={[
           { key: "title", label: "Title" },
           { key: "subject", label: "Subject" },
-          { key: "class", label: "Class" },
+          { key: "cls", label: "Class" },
           { key: "due", label: "Due" },
-          { key: "description", label: "Description" },
+          { key: "desc", label: "Description" },
         ]}
-        rows={(data || []).map((h) => ({
-          title: String(h.title),
-          subject: String(h.subject),
-          class: `${h.grade}-${h.section}`,
-          due: String(h.due_date),
-          description: String(h.description).slice(0, 60) + "…",
+        rows={homework.map((h) => ({
+          title: <span className="font-medium">{h.title}</span>,
+          subject: h.subject,
+          cls: h.cls,
+          due: h.due,
+          desc: h.desc,
         }))}
       />
     </AppShell>

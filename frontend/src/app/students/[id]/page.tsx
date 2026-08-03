@@ -1,70 +1,65 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
-import { PageHeader, StatusPill } from "@/components/ui";
-import { api } from "@/lib/api";
+import { Panel, StatusPill } from "@/components/ui";
+import { students } from "@/data/mock";
+import { ArrowLeft } from "lucide-react";
 
 export default function StudentDetailPage() {
   const params = useParams();
-  const id = params.id as string;
-  const { data, isLoading } = useQuery({
-    queryKey: ["student", id],
-    queryFn: () => api<Record<string, unknown>>(`/students/${id}`),
-  });
+  const id = Number(params.id);
+  const s = students.find((x) => x.id === id) || students[0];
 
   return (
-    <AppShell>
-      <PageHeader title="Student profile" subtitle="Personal, guardian, medical, and allocation details" />
-      {isLoading || !data ? (
-        <p className="text-sm text-[var(--muted)]">Loading…</p>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-5 space-y-2 text-sm">
-            <p className="font-display text-2xl">
-              {String(data.first_name)} {String(data.last_name)}
-            </p>
-            <p className="text-[var(--muted)]">{String(data.student_id)}</p>
-            <StatusPill status={String(data.status)} />
-            <dl className="grid grid-cols-2 gap-3 pt-3">
-              {[
-                ["Grade", `${data.grade}-${data.section}`],
-                ["Roll", data.roll_number],
-                ["DOB", data.date_of_birth],
-                ["Gender", data.gender],
-                ["Blood group", data.blood_group || "—"],
-                ["RFID", data.rfid_tag || "—"],
-                ["Scholarship", data.scholarship_code || "—"],
-                ["Admission", data.admission_date],
-              ].map(([k, v]) => (
-                <div key={String(k)}>
-                  <dt className="text-xs text-[var(--muted)]">{String(k)}</dt>
-                  <dd className="capitalize">{String(v)}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="pt-2"><span className="text-[var(--muted)]">Address: </span>{String(data.address)}</p>
-            {data.medical_notes ? (
-              <p><span className="text-[var(--muted)]">Medical: </span>{String(data.medical_notes)}</p>
-            ) : null}
-          </div>
-          <div className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-5">
-            <p className="font-medium mb-3">Guardians</p>
-            <div className="space-y-3">
-              {(data.guardians as Record<string, unknown>[] | undefined)?.map((g) => (
-                <div key={String(g.id)} className="rounded-lg border border-[var(--line)] p-3 text-sm">
-                  <p className="font-medium">{String(g.full_name)}</p>
-                  <p className="text-[var(--muted)]">
-                    {String(g.relation)} · {String(g.phone)}
-                  </p>
-                  <p className="text-[var(--muted)]">{String(g.email || "")}</p>
-                </div>
-              ))}
+    <AppShell title={s.full_name} subtitle={s.student_id}>
+      <Link href="/students" className="mb-4 inline-flex items-center gap-2 text-sm text-[var(--muted)] hover:text-[var(--brand)]">
+        <ArrowLeft size={14} /> Back to students
+      </Link>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel title="Profile">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-[var(--brand-soft)] font-display text-xl text-[var(--brand)]">
+              {s.full_name.split(" ").map((p) => p[0]).join("").slice(0, 2)}
+            </div>
+            <div>
+              <p className="font-display text-2xl">{s.full_name}</p>
+              <StatusPill status={s.status} />
             </div>
           </div>
-        </div>
-      )}
+          <dl className="grid grid-cols-2 gap-4 text-sm">
+            {[
+              ["Class", `${s.grade}-${s.section}`],
+              ["Roll", s.roll],
+              ["Campus", s.campus],
+              ["DOB", s.dob],
+              ["Gender", s.gender],
+              ["Blood", s.blood],
+              ["RFID", s.rfid],
+              ["Scholarship", s.scholarship || "—"],
+            ].map(([k, v]) => (
+              <div key={k}>
+                <dt className="text-[11px] uppercase tracking-wider text-[var(--muted)]">{k}</dt>
+                <dd className="mt-0.5 capitalize font-medium">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-4 text-sm"><span className="text-[var(--muted)]">Address · </span>{s.address}</p>
+          {s.medical && <p className="mt-2 text-sm"><span className="text-[var(--muted)]">Medical · </span>{s.medical}</p>}
+        </Panel>
+        <Panel title="Guardians">
+          <div className="space-y-3">
+            {s.guardians.map((g) => (
+              <div key={g.email} className="rounded-2xl border border-[var(--line)] bg-[var(--bg)] p-4">
+                <p className="font-semibold">{g.name}</p>
+                <p className="text-sm text-[var(--muted)]">{g.relation} · {g.phone}</p>
+                <p className="text-sm text-[var(--muted)]">{g.email}</p>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
     </AppShell>
   );
 }

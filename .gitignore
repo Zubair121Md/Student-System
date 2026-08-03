@@ -1,21 +1,10 @@
 # MIA Campus — MIA Solutions Pvt. Ltd.
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-*.db
-.env
-.mypy_cache/
-.pytest_cache/
-.DS_Store
-
-# Frontend
+node_modules/
 frontend/node_modules/
 frontend/.next/
 frontend/out/
-frontend/.env.local.local
-
-# IDE
+.DS_Store
+*.log
+.env*.local
 .idea/
 .vscode/
-*.log
