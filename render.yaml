@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: mia-campus-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: ENVIRONMENT
+        value: test
+      - key: IS_TEST_SITE
+        value: "true"
+      - key: SEED_ON_STARTUP
+        value: "true"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mia-campus-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
+  - type: web
+    name: mia-campus-web
+    runtime: node
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NEXT_PUBLIC_APP_NAME
+        value: MIA Campus
+      - key: NEXT_PUBLIC_COMPANY_NAME
+        value: MIA Solutions Pvt. Ltd.
+      - key: NEXT_PUBLIC_IS_TEST_SITE
+        value: "true"
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+
+databases:
+  - name: mia-campus-db
+    plan: free
+    databaseName: mia_campus
+    user: mia

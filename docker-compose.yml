@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://mia:mia@db:5432/mia_campus
+      CORS_ORIGINS: http://localhost:3000
+      FRONTEND_URL: http://localhost:3000
+      SEED_ON_STARTUP: "true"
+      IS_TEST_SITE: "true"
+      ENVIRONMENT: test
+    depends_on:
+      - db
+      - redis
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_APP_NAME: MIA Campus
+      NEXT_PUBLIC_COMPANY_NAME: MIA Solutions Pvt. Ltd.
+      NEXT_PUBLIC_IS_TEST_SITE: "true"
+    depends_on:
+      - api
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mia_campus
+      POSTGRES_USER: mia
+      POSTGRES_PASSWORD: mia
+    ports:
+      - "5432:5432"
+    volumes:
+      - mia_pg:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  mia_pg:
