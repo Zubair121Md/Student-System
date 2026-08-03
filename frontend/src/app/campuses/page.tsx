@@ -2,12 +2,21 @@
 
 import { AppShell } from "@/components/AppShell";
 import { DataTable, StatusPill, PageHeader } from "@/components/ui";
-import { campuses } from "@/data/mock";
+import { useAuth } from "@/lib/auth";
+import { scopedCampuses } from "@/lib/rbac";
 
 export default function CampusesPage() {
+  const { user } = useAuth();
+  if (!user) return null;
+  const rows = scopedCampuses(user);
+
   return (
-    <AppShell title="Campuses" subtitle="Branch directory">
-      <PageHeader eyebrow="Overview" title="Campuses" subtitle="Multi-campus directory · MIA Solutions Pvt. Ltd." />
+    <AppShell title="Campuses" subtitle="Branches you can access">
+      <PageHeader
+        eyebrow="Overview"
+        title="Campuses"
+        subtitle={user.role === "super_admin" ? "Full network directory" : `Focused on ${user.campus}`}
+      />
       <DataTable
         columns={[
           { key: "code", label: "Code" },
@@ -18,7 +27,7 @@ export default function CampusesPage() {
           { key: "capacity", label: "Capacity" },
           { key: "status", label: "Status" },
         ]}
-        rows={campuses.map((c) => ({
+        rows={rows.map((c) => ({
           code: <span className="font-semibold">{c.code}</span>,
           name: c.name,
           city: `${c.city}, ${c.state}`,

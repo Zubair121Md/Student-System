@@ -2,12 +2,17 @@
 
 import { AppShell } from "@/components/AppShell";
 import { Panel, StatusPill, PageHeader } from "@/components/ui";
-import { exams } from "@/data/mock";
+import { useAuth } from "@/lib/auth";
+import { scopedExams } from "@/lib/rbac";
 
 export default function ExamsPage() {
+  const { user } = useAuth();
+  if (!user) return null;
+  const exams = scopedExams(user);
+
   return (
-    <AppShell title="Examinations" subtitle="Schedules and invigilators">
-      <PageHeader eyebrow="Academics" title="Examinations" subtitle="Hall plans and published results" />
+    <AppShell title="Examinations" subtitle="Schedules in your scope">
+      <PageHeader eyebrow="Academics" title="Examinations" subtitle="Hall plans relevant to your role" />
       <div className="space-y-4">
         {exams.map((exam) => (
           <Panel key={exam.id} title={exam.name} action={<StatusPill status={exam.status} />}>
@@ -40,6 +45,7 @@ export default function ExamsPage() {
             </div>
           </Panel>
         ))}
+        {!exams.length && <p className="text-sm text-slate-500">No exams in your scope.</p>}
       </div>
     </AppShell>
   );

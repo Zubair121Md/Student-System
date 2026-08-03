@@ -4,24 +4,41 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { DataTable, SearchField, StatusPill, PageHeader } from "@/components/ui";
-import { students } from "@/data/mock";
+import { useAuth } from "@/lib/auth";
+import { scopedStudents } from "@/lib/rbac";
 
 export default function StudentsPage() {
+  const { user } = useAuth();
   const [q, setQ] = useState("");
   const filtered = useMemo(() => {
+    if (!user) return [];
+    const base = scopedStudents(user);
     const s = q.trim().toLowerCase();
-    if (!s) return students;
-    return students.filter(
+    if (!s) return base;
+    return base.filter(
       (x) =>
         x.full_name.toLowerCase().includes(s) ||
         x.student_id.toLowerCase().includes(s) ||
         x.campus.toLowerCase().includes(s)
     );
-  }, [q]);
+  }, [q, user]);
+
+  if (!user) return null;
+
+  const subtitle =
+    user.role === "teacher"
+      ? "Your Class 10-A roster"
+      : user.role === "parent"
+        ? "Your linked child"
+        : user.role === "student"
+          ? "Your student record"
+          : user.role === "super_admin"
+            ? "All campuses"
+            : `${user.campus} campus`;
 
   return (
-    <AppShell title="Students" subtitle="Student master across campuses">
-      <PageHeader eyebrow="People" title="Students" subtitle="Search and open student profiles" />
+    <AppShell title="Students" subtitle={subtitle}>
+      <PageHeader eyebrow="People" title="Students" subtitle={subtitle} />
       <div className="mb-4">
         <SearchField value={q} onChange={setQ} placeholder="Search name, ID, campus…" />
       </div>

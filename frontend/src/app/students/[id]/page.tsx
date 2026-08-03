@@ -1,16 +1,27 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Panel, StatusPill, PageHeader } from "@/components/ui";
-import { students } from "@/data/mock";
+import { useAuth } from "@/lib/auth";
+import { scopedStudents } from "@/lib/rbac";
 import { ArrowLeft } from "lucide-react";
 
 export default function StudentDetailPage() {
   const params = useParams();
+  const router = useRouter();
+  const { user } = useAuth();
   const id = Number(params.id);
-  const s = students.find((x) => x.id === id) || students[0];
+  const allowed = useMemo(() => (user ? scopedStudents(user) : []), [user]);
+  const s = allowed.find((x) => x.id === id);
+
+  useEffect(() => {
+    if (user && !s) router.replace("/students");
+  }, [user, s, router]);
+
+  if (!user || !s) return null;
 
   return (
     <AppShell title={s.full_name} subtitle={s.student_id}>
@@ -43,15 +54,25 @@ export default function StudentDetailPage() {
               </div>
             ))}
           </dl>
-          <p className="mt-4 text-sm"><span className="text-slate-500">Address · </span>{s.address}</p>
-          {s.medical ? <p className="mt-2 text-sm"><span className="text-slate-500">Medical · </span>{s.medical}</p> : null}
+          <p className="mt-4 text-sm">
+            <span className="text-slate-500">Address · </span>
+            {s.address}
+          </p>
+          {s.medical ? (
+            <p className="mt-2 text-sm">
+              <span className="text-slate-500">Medical · </span>
+              {s.medical}
+            </p>
+          ) : null}
         </Panel>
         <Panel title="Guardians">
           <div className="space-y-3">
             {s.guardians.map((g) => (
               <div key={g.email} className="rounded-2xl bg-slate-50 px-4 py-3">
                 <p className="font-semibold">{g.name}</p>
-                <p className="text-sm text-slate-500">{g.relation} · {g.phone}</p>
+                <p className="text-sm text-slate-500">
+                  {g.relation} · {g.phone}
+                </p>
                 <p className="text-sm text-slate-500">{g.email}</p>
               </div>
             ))}

@@ -2,13 +2,23 @@
 
 import { AppShell } from "@/components/AppShell";
 import { DataTable, StatusPill, PageHeader } from "@/components/ui";
-import { employees, payroll } from "@/data/mock";
+import { useAuth } from "@/lib/auth";
+import { scopedEmployees, scopedPayroll } from "@/lib/rbac";
 import { formatCurrency } from "@/lib/utils";
 
 export default function HRPage() {
+  const { user } = useAuth();
+  if (!user) return null;
+  const emps = scopedEmployees(user);
+  const pay = scopedPayroll(user);
+
   return (
-    <AppShell title="HR & payroll" subtitle="Staff and salary runs">
-      <PageHeader eyebrow="People" title="HR & payroll" subtitle="Employees and monthly payroll" />
+    <AppShell title="HR & payroll" subtitle="Staff in your scope">
+      <PageHeader
+        eyebrow="People"
+        title="HR & payroll"
+        subtitle={user.role === "hr" ? "Campus workforce and July payroll" : "Your HR records"}
+      />
       <h3 className="mb-3 text-sm font-semibold text-slate-500">Employees</h3>
       <DataTable
         columns={[
@@ -19,7 +29,7 @@ export default function HRPage() {
           { key: "email", label: "Email" },
           { key: "status", label: "Status" },
         ]}
-        rows={employees.map((e) => ({
+        rows={emps.map((e) => ({
           id: e.id,
           name: e.name,
           designation: e.designation,
@@ -38,7 +48,7 @@ export default function HRPage() {
           { key: "net", label: "Net" },
           { key: "status", label: "Status" },
         ]}
-        rows={payroll.map((p) => ({
+        rows={pay.map((p) => ({
           employee: p.employee,
           month: p.month,
           gross: formatCurrency(p.gross),
