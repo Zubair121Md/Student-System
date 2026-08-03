@@ -1,14 +1,15 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { DataTable, StatusPill } from "@/components/ui";
+import { DataTable, StatusPill, PageHeader } from "@/components/ui";
 import { employees, payroll } from "@/data/mock";
 import { formatCurrency } from "@/lib/utils";
 
 export default function HRPage() {
   return (
-    <AppShell title="HR & payroll" subtitle="Employees and monthly payroll runs">
-      <h2 className="mb-3 text-sm font-semibold">Employees</h2>
+    <AppShell title="HR & payroll" subtitle="Staff and salary runs">
+      <PageHeader eyebrow="People" title="HR & payroll" subtitle="Employees and monthly payroll" />
+      <h3 className="mb-3 text-sm font-semibold text-slate-500">Employees</h3>
       <DataTable
         columns={[
           { key: "id", label: "ID" },
@@ -27,7 +28,7 @@ export default function HRPage() {
           status: <StatusPill status={e.status} />,
         }))}
       />
-      <h2 className="mb-3 mt-8 text-sm font-semibold">Payroll</h2>
+      <h3 className="mb-3 mt-8 text-sm font-semibold text-slate-500">Payroll</h3>
       <DataTable
         columns={[
           { key: "employee", label: "Employee" },

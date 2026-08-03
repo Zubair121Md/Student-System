@@ -1,15 +1,16 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { DataTable, StatusPill, Stat } from "@/components/ui";
+import { DataTable, StatusPill, StatCard, PageHeader } from "@/components/ui";
 import { attendance, attendanceByStatus } from "@/data/mock";
 
 export default function AttendancePage() {
   return (
-    <AppShell title="Attendance" subtitle="RFID · biometric · QR · classroom · bus · hostel">
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <AppShell title="Attendance" subtitle="RFID · biometric · QR · classroom · bus">
+      <PageHeader eyebrow="Academics" title="Attendance" subtitle="Daily records and mode mix" />
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {attendanceByStatus.map((s) => (
-          <Stat key={s.name} label={s.name} value={s.value.toLocaleString("en-IN")} />
+          <StatCard key={s.name} label={s.name} value={s.value.toLocaleString("en-IN")} />
         ))}
       </div>
       <DataTable

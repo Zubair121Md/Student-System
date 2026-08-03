@@ -4,36 +4,72 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { APP_NAME, COMPANY, formatRole } from "@/lib/utils";
+import clsx from "clsx";
 import {
   LayoutDashboard, UserPlus, Users, CalendarCheck, GraduationCap,
   FileSpreadsheet, CalendarDays, Wallet, Bus, Building2, BookOpen,
   Package, Briefcase, BarChart3, Settings, Bell, LogOut, Menu, X,
-  ClipboardList, GitBranch, Sparkles,
+  ClipboardList, GitBranch, GraduationCap as Grad,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-const NAV = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admissions", label: "Admissions", icon: UserPlus },
-  { href: "/students", label: "Students", icon: Users },
-  { href: "/attendance", label: "Attendance", icon: CalendarCheck },
-  { href: "/grades", label: "Grading", icon: GraduationCap },
-  { href: "/exams", label: "Exams", icon: FileSpreadsheet },
-  { href: "/timetable", label: "Timetable", icon: CalendarDays },
-  { href: "/fees", label: "Fees", icon: Wallet },
-  { href: "/transport", label: "Transport", icon: Bus },
-  { href: "/hostel", label: "Hostel", icon: Building2 },
-  { href: "/library", label: "Library", icon: BookOpen },
-  { href: "/inventory", label: "Inventory", icon: Package },
-  { href: "/hr", label: "HR & Payroll", icon: Briefcase },
-  { href: "/homework", label: "Homework", icon: ClipboardList },
-  { href: "/workflows", label: "Workflows", icon: GitBranch },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/campuses", label: "Campuses", icon: Building2 },
-  { href: "/settings", label: "Settings", icon: Settings },
+const NAV_GROUPS = [
+  {
+    label: "Overview",
+    items: [
+      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/campuses", label: "Campuses", icon: Building2 },
+      { href: "/analytics", label: "Analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "People",
+    items: [
+      { href: "/admissions", label: "Admissions", icon: UserPlus },
+      { href: "/students", label: "Students", icon: Users },
+      { href: "/hr", label: "HR & Payroll", icon: Briefcase },
+    ],
+  },
+  {
+    label: "Academics",
+    items: [
+      { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+      { href: "/grades", label: "Grading", icon: GraduationCap },
+      { href: "/exams", label: "Examinations", icon: FileSpreadsheet },
+      { href: "/timetable", label: "Timetable", icon: CalendarDays },
+      { href: "/homework", label: "Homework", icon: ClipboardList },
+    ],
+  },
+  {
+    label: "Operations",
+    items: [
+      { href: "/fees", label: "Fees", icon: Wallet },
+      { href: "/transport", label: "Transport", icon: Bus },
+      { href: "/hostel", label: "Hostel", icon: Building2 },
+      { href: "/library", label: "Library", icon: BookOpen },
+      { href: "/inventory", label: "Inventory", icon: Package },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { href: "/workflows", label: "Workflows", icon: GitBranch },
+      { href: "/settings", label: "Settings", icon: Settings },
+    ],
+  },
 ];
 
-export function AppShell({ children, title, subtitle }: { children: ReactNode; title: string; subtitle?: string }) {
+export function AppShell({
+  children,
+  title,
+  subtitle,
+  eyebrow,
+}: {
+  children: ReactNode;
+  title: string;
+  subtitle?: string;
+  eyebrow?: string;
+}) {
   const { user, logout, loading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
@@ -41,11 +77,8 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
 
   if (loading) {
     return (
-      <div className="min-h-screen grid place-items-center">
-        <div className="flex items-center gap-3 text-[var(--muted)]">
-          <Sparkles className="animate-pulse" size={18} />
-          <span>Loading {APP_NAME}…</span>
-        </div>
+      <div className="flex min-h-screen items-center justify-center bg-surface text-slate-500">
+        Loading {APP_NAME}…
       </div>
     );
   }
@@ -56,84 +89,121 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="test-banner">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-        Portfolio demo · sample data · {COMPANY}
-      </div>
-
-      <div className="flex pt-8">
-        <aside
-          className={`fixed inset-y-0 left-0 z-40 flex w-[260px] flex-col bg-[var(--sidebar)] text-white pt-8 transition-transform duration-300 lg:static lg:translate-x-0 ${
-            open ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          <div className="px-5 py-5 border-b border-white/10">
-            <p className="font-display text-[1.65rem] leading-none tracking-tight">{APP_NAME}</p>
-            <p className="mt-1.5 text-[11px] text-[var(--sidebar-muted)]">{COMPANY}</p>
-          </div>
-
-          <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-            {NAV.map((item) => {
-              const Icon = item.icon;
-              const active = pathname === item.href || pathname.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] transition ${
-                    active
-                      ? "bg-[var(--brand)] text-white shadow-lg shadow-black/20"
-                      : "text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-white"
-                  }`}
-                >
-                  <Icon size={16} className={active ? "opacity-100" : "opacity-70 group-hover:opacity-100"} />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="m-3 rounded-2xl bg-white/5 p-3 border border-white/10">
-            <p className="text-xs text-[var(--sidebar-muted)]">Signed in</p>
-            <p className="mt-0.5 text-sm font-medium truncate">{user.full_name}</p>
-            <p className="text-[11px] text-[var(--sidebar-muted)] capitalize">{formatRole(user.role)}</p>
-          </div>
-        </aside>
-
-        {open && (
-          <button className="fixed inset-0 z-30 bg-black/40 backdrop-blur-[2px] lg:hidden fade-in" onClick={() => setOpen(false)} aria-label="Close" />
+    <div className="min-h-screen bg-surface text-ink lg:grid lg:grid-cols-[280px_1fr]">
+      <aside
+        className={clsx(
+          "fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col bg-panel text-white transition lg:static lg:translate-x-0",
+          open ? "translate-x-0" : "-translate-x-full"
         )}
-
-        <div className="min-w-0 flex-1">
-          <header className="sticky top-8 z-20 flex items-center gap-3 border-b border-[var(--line)] bg-[var(--panel)]/90 px-4 py-3 backdrop-blur-md md:px-6">
-            <button className="rounded-xl p-2 hover:bg-[var(--bg)] lg:hidden" onClick={() => setOpen((v) => !v)}>
-              {open ? <X size={18} /> : <Menu size={18} />}
-            </button>
-            <div className="min-w-0 flex-1">
-              <h1 className="truncate font-display text-xl md:text-2xl tracking-tight">{title}</h1>
-              {subtitle && <p className="truncate text-sm text-[var(--muted)]">{subtitle}</p>}
-            </div>
-            <Link href="/notifications" className="relative rounded-xl p-2.5 text-[var(--muted)] hover:bg-[var(--bg)] hover:text-[var(--ink)]">
-              <Bell size={18} />
-              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[var(--brand)]" />
-            </Link>
-            <button
-              onClick={() => { logout(); router.push("/login"); }}
-              className="inline-flex items-center gap-2 rounded-xl border border-[var(--line)] bg-[var(--panel)] px-3 py-2 text-sm text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)]"
-            >
-              <LogOut size={15} />
-              <span className="hidden sm:inline">Sign out</span>
-            </button>
-          </header>
-
-          <main className="page-enter p-4 md:p-6 lg:p-8">{children}</main>
-
-          <footer className="border-t border-[var(--line)] px-6 py-4 text-xs text-[var(--muted)]">
-            © {new Date().getFullYear()} {COMPANY}. {APP_NAME} portfolio demo.
-          </footer>
+      >
+        <div className="flex items-start justify-between gap-3 px-5 pb-4 pt-5">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-300">{APP_NAME}</p>
+            <h1 className="mt-2 font-display text-xl font-semibold leading-tight">School portal</h1>
+            <p className="mt-1 text-xs text-white/50">{user.campus}</p>
+            <p className="mt-2 text-[10px] uppercase tracking-[0.14em] text-white/35">{COMPANY}</p>
+          </div>
+          <button type="button" className="rounded-lg p-2 text-white/70 lg:hidden" onClick={() => setOpen(false)}>
+            <X className="h-5 w-5" />
+          </button>
         </div>
+
+        <div className="mx-4 mb-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-3 py-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-200">Portfolio demo</p>
+          <p className="mt-0.5 text-[11px] text-white/60">Sample data · {COMPANY}</p>
+        </div>
+
+        <nav className="flex-1 space-y-5 overflow-y-auto px-3 pb-4">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label}>
+              <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
+                {group.label}
+              </p>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className={clsx(
+                        "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition",
+                        active ? "bg-white/10 text-white" : "text-white/65 hover:bg-white/5 hover:text-white"
+                      )}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </nav>
+
+        <div className="border-t border-white/10 p-4">
+          <div className="rounded-2xl bg-white/5 p-4">
+            <p className="text-sm font-semibold">{user.full_name}</p>
+            <p className="mt-1 text-xs uppercase tracking-wider text-white/45">{formatRole(user.role)}</p>
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                router.push("/login");
+              }}
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-200 transition hover:text-white"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {open ? (
+        <button type="button" aria-label="Close menu" className="fixed inset-0 z-30 bg-black/40 lg:hidden" onClick={() => setOpen(false)} />
+      ) : null}
+
+      <div className="min-w-0">
+        <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-slate-200/80 bg-surface/90 px-4 py-3 backdrop-blur lg:px-8">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold lg:hidden"
+            onClick={() => setOpen(true)}
+          >
+            <Menu className="h-4 w-4" />
+            Menu
+          </button>
+          <div className="min-w-0 flex-1">
+            {eyebrow ? (
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">{eyebrow}</p>
+            ) : null}
+            <p className="truncate font-display text-lg font-semibold tracking-tight lg:text-xl">{title}</p>
+            {subtitle ? <p className="truncate text-xs text-slate-500">{subtitle}</p> : null}
+          </div>
+          <Link
+            href="/notifications"
+            className="relative inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-ink"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="hidden sm:inline">Alerts</span>
+            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] text-white">
+              3
+            </span>
+          </Link>
+          <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm md:flex">
+            <Grad className="h-4 w-4 text-accent" />
+            <span className="font-semibold">{user.full_name.split(" ")[0]}</span>
+          </div>
+        </header>
+
+        <main className="px-4 py-6 lg:px-8 lg:py-8">{children}</main>
+
+        <footer className="border-t border-slate-200/80 px-4 py-4 text-xs text-slate-500 lg:px-8">
+          © {new Date().getFullYear()} {COMPANY}. {APP_NAME} portfolio demo with sample data.
+        </footer>
       </div>
     </div>
   );

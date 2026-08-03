@@ -1,12 +1,13 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { DataTable } from "@/components/ui";
+import { DataTable, PageHeader } from "@/components/ui";
 import { homework } from "@/data/mock";
 
 export default function HomeworkPage() {
   return (
-    <AppShell title="Homework" subtitle="Assignments for parent and student views">
+    <AppShell title="Homework" subtitle="Assignments">
+      <PageHeader eyebrow="Academics" title="Homework" subtitle="Visible on parent and student views" />
       <DataTable
         columns={[
           { key: "title", label: "Title" },
@@ -16,7 +17,7 @@ export default function HomeworkPage() {
           { key: "desc", label: "Description" },
         ]}
         rows={homework.map((h) => ({
-          title: <span className="font-medium">{h.title}</span>,
+          title: <span className="font-semibold">{h.title}</span>,
           subject: h.subject,
           cls: h.cls,
           due: h.due,

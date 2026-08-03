@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
-import { DataTable, SearchField, StatusPill } from "@/components/ui";
+import { DataTable, SearchField, StatusPill, PageHeader } from "@/components/ui";
 import { students } from "@/data/mock";
 
 export default function StudentsPage() {
@@ -20,7 +20,8 @@ export default function StudentsPage() {
   }, [q]);
 
   return (
-    <AppShell title="Students" subtitle="Student master records across campuses">
+    <AppShell title="Students" subtitle="Student master across campuses">
+      <PageHeader eyebrow="People" title="Students" subtitle="Search and open student profiles" />
       <div className="mb-4">
         <SearchField value={q} onChange={setQ} placeholder="Search name, ID, campus…" />
       </div>
@@ -35,7 +36,7 @@ export default function StudentsPage() {
         ]}
         rows={filtered.map((s) => ({
           id: (
-            <Link href={`/students/${s.id}`} className="font-medium text-[var(--brand)] hover:underline">
+            <Link href={`/students/${s.id}`} className="font-semibold text-accent hover:underline">
               {s.student_id}
             </Link>
           ),

@@ -2,9 +2,10 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { GraduationCap } from "lucide-react";
+import { Field, PrimaryButton, TextInput, SecondaryButton } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import { DEMO_ACCOUNTS, APP_NAME, COMPANY } from "@/data/mock";
-import { ArrowRight, ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   const { login, user, loading } = useAuth();
@@ -33,108 +34,81 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="test-banner">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-        Portfolio demo · password for all accounts: Test@1234 · {COMPANY}
-      </div>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-surface px-4 py-10">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,118,110,0.18),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(15,23,42,0.08),_transparent_35%)]" />
 
-      <div className="grid min-h-screen pt-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="relative hidden overflow-hidden bg-[var(--sidebar)] text-white lg:flex flex-col justify-between p-12 xl:p-16">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-60"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 15% 20%, rgba(11,110,79,.55), transparent 42%), radial-gradient(circle at 85% 75%, rgba(31,78,121,.45), transparent 40%), linear-gradient(160deg, transparent, rgba(255,255,255,.04))",
-            }}
-          />
-          <div className="relative">
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-white/70">
-              <ShieldCheck size={13} /> Student information system
-            </p>
-            <h1 className="mt-8 font-display text-6xl leading-[0.95] tracking-tight xl:text-7xl">{APP_NAME}</h1>
-            <p className="mt-5 max-w-md text-lg text-white/70 leading-relaxed">
+      <div className="relative grid w-full max-w-5xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="hidden rounded-3xl border border-slate-200/60 bg-panel p-10 text-white shadow-soft lg:flex lg:flex-col lg:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-300">{COMPANY}</p>
+            <h1 className="mt-4 font-display text-5xl font-semibold leading-tight tracking-tight">{APP_NAME}</h1>
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/65">
               Admissions, academics, fees, and campus operations — a polished portfolio demo for school teams.
             </p>
           </div>
-          <div className="relative grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
+          <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
             {[
               ["6", "Campuses"],
               ["10.8k", "Students"],
               ["18", "Modules"],
             ].map(([n, l]) => (
               <div key={l}>
-                <p className="font-display text-3xl">{n}</p>
-                <p className="mt-1 text-xs uppercase tracking-[0.1em] text-white/50">{l}</p>
+                <p className="font-display text-3xl font-semibold">{n}</p>
+                <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">{l}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="flex items-center justify-center p-6 md:p-10">
-          <div className="w-full max-w-[420px] page-enter">
-            <div className="mb-8 lg:hidden">
-              <p className="font-display text-4xl text-[var(--brand)]">{APP_NAME}</p>
-              <p className="text-sm text-[var(--muted)]">{COMPANY}</p>
-            </div>
+        <form
+          onSubmit={onSubmit}
+          className="relative w-full rounded-3xl border border-slate-200/80 bg-white p-8 shadow-soft"
+        >
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink text-teal-200">
+            <GraduationCap className="h-6 w-6" />
+          </span>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-accent">{COMPANY}</p>
+          <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight">{APP_NAME}</h1>
+          <p className="mt-2 text-sm text-slate-600">Sign in with a demo account to explore the portal.</p>
+          <p className="mt-1 text-xs text-slate-500">Portfolio demo · password for all accounts: Test@1234</p>
 
-            <h2 className="font-display text-3xl tracking-tight">Welcome back</h2>
-            <p className="mt-2 text-sm text-[var(--muted)]">Sign in with a demo account to explore the portal.</p>
+          <div className="mt-8 grid gap-4">
+            <Field label="Email" htmlFor="email">
+              <TextInput id="email" value={email} onChange={setEmail} placeholder="admin@miasolutions.test" />
+            </Field>
+            <Field label="Password" htmlFor="password">
+              <TextInput id="password" type="password" value={password} onChange={setPassword} placeholder="Password" />
+            </Field>
+          </div>
 
-            <form onSubmit={onSubmit} className="mt-7 space-y-4 rounded-3xl border border-[var(--line)] bg-[var(--panel)] p-6 shadow-[var(--shadow)]">
-              <label className="block text-sm">
-                <span className="mb-1.5 block text-[var(--muted)]">Email</span>
-                <input
-                  className="w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3.5 py-2.5 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  required
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1.5 block text-[var(--muted)]">Password</span>
-                <input
-                  className="w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3.5 py-2.5 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  type="password"
-                  required
-                />
-              </label>
-              {error && <p className="text-sm text-rose-700">{error}</p>}
-              <button
-                type="submit"
-                disabled={busy}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] py-3 font-medium text-white transition hover:bg-[var(--brand-2)] disabled:opacity-60"
-              >
-                {busy ? "Signing in…" : "Sign in"}
-                {!busy && <ArrowRight size={16} />}
-              </button>
-            </form>
+          {error ? <p className="mt-4 text-sm font-medium text-danger">{error}</p> : null}
 
-            <div className="mt-6">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--muted)]">Demo accounts</p>
-              <div className="grid gap-2">
-                {DEMO_ACCOUNTS.map((a) => (
-                  <button
-                    key={a.email}
-                    type="button"
-                    onClick={() => {
-                      setEmail(a.email);
-                      setPassword(a.password);
-                    }}
-                    className="flex items-center justify-between rounded-2xl border border-[var(--line)] bg-[var(--panel)] px-3.5 py-2.5 text-left text-sm transition hover:border-[var(--brand)] hover:bg-[var(--brand-soft)]/40"
-                  >
-                    <span className="truncate font-medium">{a.full_name}</span>
-                    <span className="ml-3 shrink-0 text-[11px] capitalize text-[var(--muted)]">{a.role.replaceAll("_", " ")}</span>
-                  </button>
-                ))}
-              </div>
+          <PrimaryButton type="submit" disabled={busy} className="mt-6 w-full py-3">
+            {busy ? "Signing in…" : "Enter portal"}
+          </PrimaryButton>
+
+          <div className="mt-6">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Demo accounts</p>
+            <div className="grid gap-2">
+              {DEMO_ACCOUNTS.map((a) => (
+                <SecondaryButton
+                  key={a.email}
+                  className="w-full justify-between px-3 py-2.5 text-left"
+                  onClick={() => {
+                    setEmail(a.email);
+                    setPassword(a.password);
+                  }}
+                >
+                  <span className="truncate font-semibold">{a.full_name}</span>
+                  <span className="shrink-0 text-[11px] uppercase tracking-wider text-slate-400">
+                    {a.role.replaceAll("_", " ")}
+                  </span>
+                </SecondaryButton>
+              ))}
             </div>
           </div>
-        </section>
+        </form>
       </div>
-    </div>
+    </main>
   );
 }

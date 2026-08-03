@@ -1,13 +1,14 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { DataTable, StatusPill } from "@/components/ui";
+import { DataTable, StatusPill, PageHeader } from "@/components/ui";
 import { libraryBooks, libraryIssues } from "@/data/mock";
 
 export default function LibraryPage() {
   return (
-    <AppShell title="Library" subtitle="Catalog, issues, and RFID tags">
-      <h2 className="mb-3 text-sm font-semibold">Catalog</h2>
+    <AppShell title="Library" subtitle="Catalog and issues">
+      <PageHeader eyebrow="Operations" title="Library" subtitle="Books, RFID, and fines" />
+      <h3 className="mb-3 text-sm font-semibold text-slate-500">Catalog</h3>
       <DataTable
         columns={[
           { key: "title", label: "Title" },
@@ -24,7 +25,7 @@ export default function LibraryPage() {
           rfid: b.rfid,
         }))}
       />
-      <h2 className="mb-3 mt-8 text-sm font-semibold">Issues</h2>
+      <h3 className="mb-3 mt-8 text-sm font-semibold text-slate-500">Issues</h3>
       <DataTable
         columns={[
           { key: "book", label: "Book" },

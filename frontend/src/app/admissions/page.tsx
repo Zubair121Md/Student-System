@@ -1,15 +1,16 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { DataTable, StatusPill, Stat } from "@/components/ui";
+import { DataTable, StatusPill, StatCard, PageHeader } from "@/components/ui";
 import { admissions, admissionByStatus } from "@/data/mock";
 
 export default function AdmissionsPage() {
   return (
-    <AppShell title="Admissions" subtitle="Application → verification → assessment → approval → enrollment">
-      <div className="mb-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    <AppShell title="Admissions" subtitle="Application through enrollment pipeline">
+      <PageHeader eyebrow="People" title="Admissions" subtitle="Application → verification → assessment → approval → enrollment" />
+      <div className="mb-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {admissionByStatus.map((s) => (
-          <Stat key={s.name} label={s.name} value={s.value} />
+          <StatCard key={s.name} label={s.name} value={String(s.value)} />
         ))}
       </div>
       <DataTable
@@ -24,7 +25,7 @@ export default function AdmissionsPage() {
           { key: "status", label: "Status" },
         ]}
         rows={admissions.map((a) => ({
-          no: <span className="font-medium text-[var(--brand)]">{a.no}</span>,
+          no: <span className="font-semibold text-accent">{a.no}</span>,
           name: a.name,
           grade: a.grade,
           parent: a.parent,

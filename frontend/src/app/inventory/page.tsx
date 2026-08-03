@@ -1,12 +1,13 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { DataTable } from "@/components/ui";
+import { DataTable, PageHeader } from "@/components/ui";
 import { inventory } from "@/data/mock";
 
 export default function InventoryPage() {
   return (
-    <AppShell title="Inventory" subtitle="Lab equipment, uniforms, stationery">
+    <AppShell title="Inventory" subtitle="Stock and reorder levels">
+      <PageHeader eyebrow="Operations" title="Inventory" subtitle="Lab, uniforms, stationery" />
       <DataTable
         columns={[
           { key: "sku", label: "SKU" },
@@ -23,9 +24,9 @@ export default function InventoryPage() {
           qty: String(i.qty),
           reorder: String(i.reorder),
           stock: i.low ? (
-            <span className="text-xs font-semibold text-rose-700">Low stock</span>
+            <span className="text-xs font-bold text-rose-700">Low stock</span>
           ) : (
-            <span className="text-xs font-semibold text-emerald-700">In stock</span>
+            <span className="text-xs font-bold text-emerald-700">In stock</span>
           ),
         }))}
       />

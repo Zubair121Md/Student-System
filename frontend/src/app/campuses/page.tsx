@@ -1,12 +1,13 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { DataTable, StatusPill } from "@/components/ui";
+import { DataTable, StatusPill, PageHeader } from "@/components/ui";
 import { campuses } from "@/data/mock";
 
 export default function CampusesPage() {
   return (
-    <AppShell title="Campuses" subtitle="Multi-campus directory · MIA Solutions Pvt. Ltd.">
+    <AppShell title="Campuses" subtitle="Branch directory">
+      <PageHeader eyebrow="Overview" title="Campuses" subtitle="Multi-campus directory · MIA Solutions Pvt. Ltd." />
       <DataTable
         columns={[
           { key: "code", label: "Code" },
@@ -18,7 +19,7 @@ export default function CampusesPage() {
           { key: "status", label: "Status" },
         ]}
         rows={campuses.map((c) => ({
-          code: <span className="font-medium">{c.code}</span>,
+          code: <span className="font-semibold">{c.code}</span>,
           name: c.name,
           city: `${c.city}, ${c.state}`,
           curriculum: c.curriculum,

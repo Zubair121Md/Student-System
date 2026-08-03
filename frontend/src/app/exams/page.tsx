@@ -1,24 +1,23 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { Panel, StatusPill } from "@/components/ui";
+import { Panel, StatusPill, PageHeader } from "@/components/ui";
 import { exams } from "@/data/mock";
 
 export default function ExamsPage() {
   return (
-    <AppShell title="Examinations" subtitle="Schedules, halls, and invigilators">
+    <AppShell title="Examinations" subtitle="Schedules and invigilators">
+      <PageHeader eyebrow="Academics" title="Examinations" subtitle="Hall plans and published results" />
       <div className="space-y-4">
         {exams.map((exam) => (
-          <Panel
-            key={exam.id}
-            title={exam.name}
-            action={<StatusPill status={exam.status} />}
-          >
-            <p className="mb-4 text-sm text-[var(--muted)]">{exam.range} · {exam.type.replaceAll("_", " ")}</p>
+          <Panel key={exam.id} title={exam.name} action={<StatusPill status={exam.status} />}>
+            <p className="mb-4 text-sm text-slate-500">
+              {exam.range} · {exam.type.replaceAll("_", " ")}
+            </p>
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="text-left text-[11px] uppercase tracking-wider text-[var(--muted)]">
+                  <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
                     <th className="pb-2">Date</th>
                     <th className="pb-2">Subject</th>
                     <th className="pb-2">Time</th>
@@ -28,9 +27,9 @@ export default function ExamsPage() {
                 </thead>
                 <tbody>
                   {exam.schedules.map((s) => (
-                    <tr key={s.date + s.subject} className="border-t border-[var(--line)]">
+                    <tr key={s.date + s.subject} className="border-t border-slate-100">
                       <td className="py-2.5">{s.date}</td>
-                      <td className="py-2.5 font-medium">{s.subject}</td>
+                      <td className="py-2.5 font-semibold">{s.subject}</td>
                       <td className="py-2.5">{s.time}</td>
                       <td className="py-2.5">{s.room}</td>
                       <td className="py-2.5">{s.invigilator}</td>

@@ -1,13 +1,14 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { DataTable, StatusPill } from "@/components/ui";
+import { DataTable, StatusPill, PageHeader } from "@/components/ui";
 import { workflows, circulars, complaints } from "@/data/mock";
 
 export default function WorkflowsPage() {
   return (
-    <AppShell title="Workflows & communication" subtitle="Approvals, circulars, complaints">
-      <h2 className="mb-3 text-sm font-semibold">Approvals</h2>
+    <AppShell title="Workflows" subtitle="Approvals and communication">
+      <PageHeader eyebrow="System" title="Workflows & communication" subtitle="Approvals, circulars, complaints" />
+      <h3 className="mb-3 text-sm font-semibold text-slate-500">Approvals</h3>
       <DataTable
         columns={[
           { key: "module", label: "Module" },
@@ -22,7 +23,7 @@ export default function WorkflowsPage() {
           comments: w.comments,
         }))}
       />
-      <h2 className="mb-3 mt-8 text-sm font-semibold">Circulars</h2>
+      <h3 className="mb-3 mt-8 text-sm font-semibold text-slate-500">Circulars</h3>
       <DataTable
         columns={[
           { key: "title", label: "Title" },
@@ -31,7 +32,7 @@ export default function WorkflowsPage() {
         ]}
         rows={circulars.map((c) => ({ title: c.title, audience: c.audience, date: c.date }))}
       />
-      <h2 className="mb-3 mt-8 text-sm font-semibold">Complaints</h2>
+      <h3 className="mb-3 mt-8 text-sm font-semibold text-slate-500">Complaints</h3>
       <DataTable
         columns={[
           { key: "category", label: "Category" },
